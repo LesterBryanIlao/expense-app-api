@@ -1,0 +1,15 @@
+-- Ensure the "expense_category" table exists
+CREATE TABLE IF NOT EXISTS expense_category (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- Ensure the "expense" table exists
+CREATE TABLE IF NOT EXISTS expense (
+    id BIGSERIAL PRIMARY KEY,
+    description VARCHAR(255) NOT NULL,
+    amount DECIMAL(10,2) NOT NULL CHECK (amount > 0),
+    category_id BIGINT NOT NULL DEFAULT 1, -- Default to 'Uncategorized'
+    date TIMESTAMP NOT NULL,
+    CONSTRAINT fk_expense_category FOREIGN KEY (category_id) REFERENCES expense_category(id) ON DELETE SET DEFAULT
+);

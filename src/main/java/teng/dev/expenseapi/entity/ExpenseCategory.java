@@ -16,5 +16,6 @@ public class ExpenseCategory {
 
 	@NotBlank(message = "Category name cannot be empty")
 	@Column(unique = true, nullable = false)
-	private String name;
+	private String name = "Uncategorized";
+
 }

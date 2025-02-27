@@ -3,7 +3,9 @@ package teng.dev.expenseapi.repository;
 import org.springframework.data.jpa.repository.*;
 import teng.dev.expenseapi.entity.*;
 
+import java.util.*;
+
 public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory, Long>
 {
-	ExpenseCategory findByName(String cleanCategory);
+	Optional<ExpenseCategory> findByName(String cleanCategory);
 }

@@ -44,4 +44,11 @@ public class ExpenseCategoryController
 		ExpenseCategoryResponseDto response = expenseCategoryService.addCategory(categoryDto);
 		return ResponseEntity.ok(response);
 	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<ExpenseCategoryResponseDto> deleteCategory(@PathVariable Long id)
+	{
+		ExpenseCategoryResponseDto response = expenseCategoryService.deleteCategoryById(id);
+		return ResponseEntity.ok(response);
+	}
 }

@@ -13,4 +13,6 @@ public interface ExpenseCategoryService
 	ExpenseCategoryResponseDto addCategory(ExpenseCategoryRequestDto categoryDto);
 
 	List<ExpenseCategoryResponseDto> getCategory(Long id, String name);
+
+	ExpenseCategoryResponseDto deleteCategoryById(Long id);
 }
