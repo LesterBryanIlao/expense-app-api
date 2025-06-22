@@ -26,9 +26,16 @@ public class Expense {
 	private BigDecimal amount;
 
 	@ManyToOne
-	@JoinColumn(name = "category_id", nullable = true) // Can be null
+	@JoinColumn(name = "category_id", nullable = false) // Can be null
 	private ExpenseCategory category;
 
 	@Column(nullable = false)
 	private LocalDateTime date;
+
+	@PrePersist
+	public void assignDefaultCategory() {
+		if (this.category == null) {
+			this.category = new ExpenseCategory(1L, "Uncategorized"); // Set default category by ID
+		}
+	}
 }
