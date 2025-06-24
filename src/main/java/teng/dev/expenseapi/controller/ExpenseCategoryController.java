@@ -5,7 +5,7 @@ import lombok.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import teng.dev.expenseapi.dto.*;
-import teng.dev.expenseapi.service.*;
+import teng.dev.expenseapi.service.ExpenseCategoryService;
 
 import java.util.*;
 
@@ -17,38 +17,39 @@ public class ExpenseCategoryController
 	private final ExpenseCategoryService expenseCategoryService;
 
 	@GetMapping
-	public ResponseEntity<List<ExpenseCategoryResponseDto>> getAllCategories()
+	public ResponseEntity<List<ExpenseCategoryResponseDTO>> getAllCategories()
 	{
-		List<ExpenseCategoryResponseDto> response = expenseCategoryService.getAllCategories();
+		List<ExpenseCategoryResponseDTO> response = expenseCategoryService.getAllCategories();
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ExpenseCategoryResponseDto> getCategoryById(@PathVariable Long id)
+	public ResponseEntity<ExpenseCategoryResponseDTO> getCategoryById(@PathVariable Long id)
 	{
-		ExpenseCategoryResponseDto response = expenseCategoryService.getCategoryById(id);
+		ExpenseCategoryResponseDTO response = expenseCategoryService.getCategoryById(id);
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/search")
-	public ResponseEntity<List<ExpenseCategoryResponseDto>> getCategory(@RequestParam(value = "id", required = false) Long id,
-	                                                              @RequestParam(value = "name", required = false) String name){
+//	@GetMapping("/search")
+//	public ResponseEntity<List<ExpenseCategoryResponseDTO>> getCategory(@RequestParam(value = "id", required = false) Long id,
+//	                                                              @RequestParam(value = "name", required = false) String name){
+//
+//		List<ExpenseCategoryResponseDTO> response = expenseCategoryService.getCategory(id, name);
+//
+//		return ResponseEntity.ok(response);
+//	}
 
-		List<ExpenseCategoryResponseDto> response = expenseCategoryService.getCategory(id, name);
-
-		return ResponseEntity.ok(response);
-	}
 	@PostMapping
-	public ResponseEntity<ExpenseCategoryResponseDto> addCategory(@RequestBody @Valid ExpenseCategoryRequestDto categoryDto)
+	public ResponseEntity<ExpenseCategoryResponseDTO> addCategory(@RequestBody @Valid ExpenseCategoryRequestDTO categoryDto)
 	{
-		ExpenseCategoryResponseDto response = expenseCategoryService.addCategory(categoryDto);
+		ExpenseCategoryResponseDTO response = expenseCategoryService.addCategory(categoryDto);
 		return ResponseEntity.ok(response);
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ExpenseCategoryResponseDto> deleteCategory(@PathVariable Long id)
+	public ResponseEntity<ExpenseCategoryResponseDTO> deleteCategory(@PathVariable Long id)
 	{
-		ExpenseCategoryResponseDto response = expenseCategoryService.deleteCategoryById(id);
+		ExpenseCategoryResponseDTO response = expenseCategoryService.deleteCategoryById(id);
 		return ResponseEntity.ok(response);
 	}
 }

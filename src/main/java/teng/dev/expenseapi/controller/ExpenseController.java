@@ -1,14 +1,17 @@
 package teng.dev.expenseapi.controller;
 
-import lombok.*;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.PathVariable;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import teng.dev.expenseapi.dto.ExpenseResponseDto;
-import teng.dev.expenseapi.service.*;
+import teng.dev.expenseapi.dto.ExpenseRequestDTO;
+import teng.dev.expenseapi.dto.ExpenseResponseDTO;
+import teng.dev.expenseapi.service.ExpenseService;
 
 import java.util.List;
 
@@ -20,14 +23,20 @@ public class ExpenseController
 	private final ExpenseService expenseService;
 
 	@GetMapping
-	public ResponseEntity<List<ExpenseResponseDto>> getAllExpenses()
+	public ResponseEntity<List<ExpenseResponseDTO>> getAllExpenses()
 	{
 		return ResponseEntity.ok(expenseService.getAllExpenses());
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ExpenseResponseDto> getExpenseById(@PathVariable Long id)
+	public ResponseEntity<ExpenseResponseDTO> getExpenseById(@PathVariable Long id)
 	{
 		return ResponseEntity.ok(expenseService.getExpenseById(id));
+	}
+
+	@PostMapping
+	public ResponseEntity<ExpenseResponseDTO> createExpense(@Valid @RequestBody ExpenseRequestDTO request)
+	{
+		return ResponseEntity.ok(expenseService.createExpense(request));
 	}
 }

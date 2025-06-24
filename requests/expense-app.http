@@ -1,0 +1,28 @@
+###
+GET http://localhost:8080/api/v1/expenses
+
+###
+GET http://localhost:8080/api/v1/expenses/1
+
+###
+POST http://localhost:8080/api/v1/expenses
+Content-Type: application/json
+
+{
+  "description": "Test",
+  "amount": 100.00,
+  "transactionDate": "2023-10-01"
+}
+###
+GET http://localhost:8080/api/v1/categories
+
+###
+GET http://localhost:8080/api/v1/categories/1
+
+###
+POST http://localhost:8080/api/v1/categories
+Content-Type: application/json
+
+{
+  "name": "Uncategorized"
+}

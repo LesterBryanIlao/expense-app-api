@@ -5,7 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -30,12 +30,5 @@ public class Expense {
 	private ExpenseCategory category;
 
 	@Column(nullable = false)
-	private LocalDateTime date;
-
-	@PrePersist
-	public void assignDefaultCategory() {
-		if (this.category == null) {
-			this.category = new ExpenseCategory(1L, "Uncategorized"); // Set default category by ID
-		}
-	}
+	private LocalDate transactionDate;
 }
