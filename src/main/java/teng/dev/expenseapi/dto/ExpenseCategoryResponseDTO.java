@@ -1,14 +1,13 @@
 package teng.dev.expenseapi.dto;
 
-import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ExpenseCategoryRequestDto
+public class ExpenseCategoryResponseDTO
 {
-	@NotNull
+	private Long id;
 	private String name;
 }

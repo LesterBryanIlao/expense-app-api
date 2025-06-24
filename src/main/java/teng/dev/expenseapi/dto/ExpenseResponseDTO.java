@@ -9,7 +9,7 @@ import java.time.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ExpenseResponseDto
+public class ExpenseResponseDTO
 {
 	private Long id;
 
@@ -17,7 +17,7 @@ public class ExpenseResponseDto
 
 	private BigDecimal amount;
 
-	private ExpenseCategoryResponseDto category;
+	private ExpenseCategoryResponseDTO category;
 
-	private LocalDateTime date;
+	private LocalDate transactionDate;
 }
