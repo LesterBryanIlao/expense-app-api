@@ -1,5 +1,4 @@
-INSERT INTO expense_category (id, name) VALUES
-(1, 'Uncategorized'),
+-- INSERT INTO expense_category (id, name) VALUES (1, 'Uncategorized')
 -- (2, 'Food'),
 -- (3, 'Travel'),
 -- (4, 'Entertainment'),

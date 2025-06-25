@@ -9,7 +9,7 @@ POST http://localhost:8080/api/v1/expenses
 Content-Type: application/json
 
 {
-  "description": "Test",
+  "description": "Test Expense",
   "amount": 100.00,
   "transactionDate": "2023-10-01"
 }
@@ -24,5 +24,5 @@ POST http://localhost:8080/api/v1/categories
 Content-Type: application/json
 
 {
-  "name": "Uncategorized"
+  "name": "Test Category"
 }
