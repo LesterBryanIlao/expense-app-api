@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import teng.dev.expenseapi.util.StringConstants;
 
 @Data
 @AllArgsConstructor
@@ -30,6 +31,6 @@ public class ExpenseCategory
 
 	@NotBlank(message = "Category name cannot be empty")
 	@Column(unique = true, nullable = false)
-	private String name = "Uncategorized";
+	private String name;
 
 }

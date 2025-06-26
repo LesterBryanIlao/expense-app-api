@@ -47,9 +47,10 @@ public class ExpenseCategoryController
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ExpenseCategoryResponseDTO> deleteCategory(@PathVariable Long id)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteCategory(@PathVariable Long id)
 	{
-		ExpenseCategoryResponseDTO response = expenseCategoryService.deleteCategoryById(id);
-		return ResponseEntity.ok(response);
+		expenseCategoryService.deleteCategoryById(id);
+
 	}
 }

@@ -1,23 +1,30 @@
 package teng.dev.expenseapi.service;
 
-import org.springframework.stereotype.*;
-import teng.dev.expenseapi.dto.*;
-import teng.dev.expenseapi.entity.*;
-import teng.dev.expenseapi.repository.*;
-import teng.dev.expenseapi.util.*;
+import org.springframework.stereotype.Service;
+import teng.dev.expenseapi.dto.ExpenseCategoryRequestDTO;
+import teng.dev.expenseapi.dto.ExpenseCategoryResponseDTO;
+import teng.dev.expenseapi.entity.Expense;
+import teng.dev.expenseapi.entity.ExpenseCategory;
+import teng.dev.expenseapi.repository.ExpenseCategoryRepository;
+import teng.dev.expenseapi.repository.ExpenseRepository;
+import teng.dev.expenseapi.util.DataMapper;
+import teng.dev.expenseapi.util.StringConstants;
+import teng.dev.expenseapi.util.StringUtil;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 
 @Service
 public class ExpenseCategoryService
 {
-	public final String DEFAULT_CATEGORY = "Uncategorized";
+	public final ExpenseCategory DEFAULT_CATEGORY = new ExpenseCategory(1L, StringConstants.UNCATEGORIZED);
 	private final ExpenseCategoryRepository expenseCategoryRepository;
 	private final ExpenseRepository expenseRepository;
 
 	public ExpenseCategoryService(ExpenseCategoryRepository expenseCategoryRepository,
-	                                  ExpenseRepository expenseRepository)
+	                              ExpenseRepository expenseRepository)
 	{
 		this.expenseCategoryRepository = expenseCategoryRepository;
 		this.expenseRepository = expenseRepository;
@@ -81,34 +88,25 @@ public class ExpenseCategoryService
 		return DataMapper.mapToExpenseCategoryDto(savedCategory);
 	}
 
-	public ExpenseCategoryResponseDTO deleteCategoryById(Long id)
+	public void deleteCategoryById(Long id)
 	{
+		if (id == 1)
+		{
+			throw new RuntimeException("Reserved id. Cannot delete.");
+		}
+
 		ExpenseCategory categoryToDelete = expenseCategoryRepository.findById(id).orElseThrow(() ->
 				new RuntimeException(
 						String.format("Expense Category record with id=%d does not exist.", id))
 		);
+
 		List<Expense> relatedExpenses = expenseRepository.findByCategoryId(id);
 
-		relatedExpenses.forEach(this::updateCategory);
+//		relatedExpenses.forEach(expense -> expense.setCategory(DEFAULT_CATEGORY));
 
 		expenseRepository.saveAll(relatedExpenses);
 
 		expenseCategoryRepository.delete(categoryToDelete);
 
-		return DataMapper.mapToExpenseCategoryDto(categoryToDelete);
-	}
-
-	private Expense updateCategory(Expense expense)
-	{
-		Optional<ExpenseCategory> defaultExpenseCategory = expenseCategoryRepository.findByName(DEFAULT_CATEGORY);
-
-		if (defaultExpenseCategory.isEmpty())
-		{
-			defaultExpenseCategory = Optional.of(expenseCategoryRepository.save(new ExpenseCategory(null, "Uncategorized")));
-		}
-
-		expense.setCategory(defaultExpenseCategory.get());
-
-		return expense;
 	}
 }
