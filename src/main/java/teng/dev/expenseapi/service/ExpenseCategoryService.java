@@ -5,6 +5,7 @@ import teng.dev.expenseapi.dto.ExpenseCategoryRequestDTO;
 import teng.dev.expenseapi.dto.ExpenseCategoryResponseDTO;
 import teng.dev.expenseapi.entity.Expense;
 import teng.dev.expenseapi.entity.ExpenseCategory;
+import teng.dev.expenseapi.exception.CategoryNotFoundException;
 import teng.dev.expenseapi.repository.ExpenseCategoryRepository;
 import teng.dev.expenseapi.repository.ExpenseRepository;
 import teng.dev.expenseapi.util.DataMapper;
@@ -47,7 +48,7 @@ public class ExpenseCategoryService
 	public ExpenseCategoryResponseDTO getCategoryById(Long id)
 	{
 		ExpenseCategory category = expenseCategoryRepository.findById(id).orElseThrow(() ->
-				new RuntimeException(
+				new CategoryNotFoundException(
 						String.format("Expense Category record with id=%d does not exist.", id))
 		);
 
@@ -102,9 +103,14 @@ public class ExpenseCategoryService
 
 		List<Expense> relatedExpenses = expenseRepository.findByCategoryId(id);
 
-//		relatedExpenses.forEach(expense -> expense.setCategory(DEFAULT_CATEGORY));
+		ExpenseCategory defaultCategory = expenseCategoryRepository.findById(1L).orElseThrow(() ->
+				new CategoryNotFoundException(
+						String.format("Expense Category record with id=%d does not exist.", id))
+		);
 
-		expenseRepository.saveAll(relatedExpenses);
+		relatedExpenses.forEach(relatedExpense -> relatedExpense.setCategory(defaultCategory));
+
+		expenseRepository.saveAllAndFlush(relatedExpenses);
 
 		expenseCategoryRepository.delete(categoryToDelete);
 
