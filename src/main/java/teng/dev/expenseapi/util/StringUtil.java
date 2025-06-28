@@ -20,4 +20,15 @@ public class StringUtil
 
 		return capitalizedString.toString().trim();
 	}
+
+	public static String clean(String input) {
+		if (input == null) return null;
+
+		return input
+				.trim()
+				.replaceAll("\\s+", " ")         // Normalize spaces
+				.replaceAll("[^a-zA-Z0-9 ]", "")  // Remove non-alphanumeric (allow space)
+				.toLowerCase();
+	}
+
 }

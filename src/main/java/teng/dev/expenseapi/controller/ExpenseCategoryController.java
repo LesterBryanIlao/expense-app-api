@@ -1,56 +1,58 @@
 package teng.dev.expenseapi.controller;
 
-import jakarta.validation.*;
-import lombok.*;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
-import teng.dev.expenseapi.dto.*;
+import jakarta.validation.Valid;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import teng.dev.expenseapi.dto.ExpenseCategoryRequestDTO;
+import teng.dev.expenseapi.dto.ExpenseCategoryResponseDTO;
 import teng.dev.expenseapi.service.ExpenseCategoryService;
-
-import java.util.*;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/categories")
-public class ExpenseCategoryController
-{
-	private final ExpenseCategoryService expenseCategoryService;
+public class ExpenseCategoryController {
+    private final ExpenseCategoryService expenseCategoryService;
 
-	@GetMapping
-	public ResponseEntity<List<ExpenseCategoryResponseDTO>> getAllCategories()
-	{
-		List<ExpenseCategoryResponseDTO> response = expenseCategoryService.getAllCategories();
-		return ResponseEntity.ok(response);
-	}
+    @GetMapping
+    public ResponseEntity<List<ExpenseCategoryResponseDTO>> getAllCategories() {
+        List<ExpenseCategoryResponseDTO> response = expenseCategoryService.getAllCategories();
+        return ResponseEntity.ok(response);
+    }
 
-	@GetMapping("/{id}")
-	public ResponseEntity<ExpenseCategoryResponseDTO> getCategoryById(@PathVariable Long id)
-	{
-		ExpenseCategoryResponseDTO response = expenseCategoryService.getCategoryById(id);
-		return ResponseEntity.ok(response);
-	}
+    @GetMapping("/{id}")
+    public ResponseEntity<ExpenseCategoryResponseDTO> getCategoryById(@PathVariable Long id) {
+        ExpenseCategoryResponseDTO response = expenseCategoryService.getCategoryById(id);
+        return ResponseEntity.ok(response);
+    }
 
-//	@GetMapping("/search")
-//	public ResponseEntity<List<ExpenseCategoryResponseDTO>> getCategory(@RequestParam(value = "id", required = false) Long id,
-//	                                                              @RequestParam(value = "name", required = false) String name){
-//
-//		List<ExpenseCategoryResponseDTO> response = expenseCategoryService.getCategory(id, name);
-//
-//		return ResponseEntity.ok(response);
-//	}
+    @PostMapping
+    public ResponseEntity<ExpenseCategoryResponseDTO> addCategory(
+            @RequestBody @Valid ExpenseCategoryRequestDTO request) {
+        ExpenseCategoryResponseDTO response = expenseCategoryService.addCategory(request);
+        return ResponseEntity.ok(response);
+    }
 
-	@PostMapping
-	public ResponseEntity<ExpenseCategoryResponseDTO> addCategory(@RequestBody @Valid ExpenseCategoryRequestDTO categoryDto)
-	{
-		ExpenseCategoryResponseDTO response = expenseCategoryService.addCategory(categoryDto);
-		return ResponseEntity.ok(response);
-	}
+    @PutMapping("/{id}")
+    public ResponseEntity<ExpenseCategoryResponseDTO> updateCategory(
+            @PathVariable Long id, @RequestBody @Valid ExpenseCategoryRequestDTO request) {
+      ExpenseCategoryResponseDTO response = expenseCategoryService.updateCategory(id, request);
+      return ResponseEntity.ok(response);
+    }
 
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteCategory(@PathVariable Long id)
-	{
-		expenseCategoryService.deleteCategoryById(id);
-
-	}
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCategory(@PathVariable Long id) {
+        expenseCategoryService.deleteCategoryById(id);
+    }
 }

@@ -13,6 +13,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import teng.dev.expenseapi.util.StringConstants;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,5 +35,4 @@ public class ExpenseCategory
 	@NotBlank(message = "Category name cannot be empty")
 	@Column(unique = true, nullable = false)
 	private String name;
-
 }

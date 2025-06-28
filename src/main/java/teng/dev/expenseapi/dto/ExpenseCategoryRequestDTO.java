@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 public class ExpenseCategoryRequestDTO
 {
-	@NotNull
+	@NotBlank(message = "Category name cannot be empty")
 	private String name;
 }
