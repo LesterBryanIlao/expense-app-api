@@ -73,7 +73,7 @@ public class ExpenseCategoryService
 
 	public void deleteCategoryById(Long id)
 	{
-		if (id == 1)
+		if (id == 1L)
 		{
 			throw new RuntimeException("Reserved id. Cannot delete.");
 		}
@@ -83,7 +83,7 @@ public class ExpenseCategoryService
 						.findById(id)
 						.orElseThrow(
 								() ->
-										new RuntimeException(
+										new CategoryNotFoundException(
 												String.format("Expense Category record with id=%d does not exist.",
                                                         id)));
 
@@ -94,9 +94,7 @@ public class ExpenseCategoryService
 						.findById(1L)
 						.orElseThrow(
 								() ->
-										new CategoryNotFoundException(
-												String.format("Expense Category record with id=%d does not exist.",
-                                                        id)));
+										new CategoryNotFoundException("Default category does not exist."));
 
 		relatedExpenses.forEach(relatedExpense -> relatedExpense.setCategory(defaultCategory));
 
@@ -122,6 +120,7 @@ public class ExpenseCategoryService
 		{
 			throw new RuntimeException("No changes detected.");
 		}
+
 		toUpdate.setName(request.getName());
 
 		ExpenseCategory updatedCategory = expenseCategoryRepository.save(toUpdate);
