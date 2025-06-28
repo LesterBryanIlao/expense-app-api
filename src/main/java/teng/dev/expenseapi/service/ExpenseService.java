@@ -19,7 +19,6 @@ import java.util.List;
 public class ExpenseService
 {
 	private final ExpenseRepository expenseRepository;
-	private final ExpenseCategoryRepository categoryRepository;
 	private final ExpenseCategoryRepository expenseCategoryRepository;
 
 	public List<ExpenseResponseDTO> getAllExpenses()
