@@ -1,8 +1,5 @@
 package teng.dev.expenseapi.service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import teng.dev.expenseapi.dto.ExpenseCategoryRequestDTO;
 import teng.dev.expenseapi.dto.ExpenseCategoryResponseDTO;
@@ -12,120 +9,123 @@ import teng.dev.expenseapi.exception.CategoryNotFoundException;
 import teng.dev.expenseapi.repository.ExpenseCategoryRepository;
 import teng.dev.expenseapi.repository.ExpenseRepository;
 import teng.dev.expenseapi.util.DataMapper;
-import teng.dev.expenseapi.util.StringUtil;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
-public class ExpenseCategoryService {
-  private final ExpenseCategoryRepository expenseCategoryRepository;
-  private final ExpenseRepository expenseRepository;
+public class ExpenseCategoryService
+{
+	private final ExpenseCategoryRepository expenseCategoryRepository;
+	private final ExpenseRepository expenseRepository;
 
-  public ExpenseCategoryService(
-      ExpenseCategoryRepository expenseCategoryRepository, ExpenseRepository expenseRepository) {
-    this.expenseCategoryRepository = expenseCategoryRepository;
-    this.expenseRepository = expenseRepository;
-  }
+	public ExpenseCategoryService(
+			ExpenseCategoryRepository expenseCategoryRepository, ExpenseRepository expenseRepository)
+	{
+		this.expenseCategoryRepository = expenseCategoryRepository;
+		this.expenseRepository = expenseRepository;
+	}
 
-  public List<ExpenseCategoryResponseDTO> getAllCategories() {
-    if (expenseCategoryRepository.count() == 0) {
-      throw new RuntimeException("No Expense Category record found.");
-    }
+	public List<ExpenseCategoryResponseDTO> getAllCategories()
+	{
+		if (expenseCategoryRepository.count() == 0)
+		{
+			throw new RuntimeException("No Expense Category record found.");
+		}
 
-    return expenseCategoryRepository.findAll().stream()
-        .map(DataMapper::mapToExpenseCategoryDto)
-        .toList();
-  }
+		return expenseCategoryRepository.findAll().stream()
+				.map(DataMapper::mapToExpenseCategoryDto)
+				.toList();
+	}
 
-  public ExpenseCategoryResponseDTO getCategoryById(Long id) {
-    ExpenseCategory category =
-        expenseCategoryRepository
-            .findById(id)
-            .orElseThrow(
-                () ->
-                    new CategoryNotFoundException(
-                        String.format("Expense Category record with id=%d does not exist.", id)));
+	public ExpenseCategoryResponseDTO getCategoryById(Long id)
+	{
+		ExpenseCategory category =
+				expenseCategoryRepository
+						.findById(id)
+						.orElseThrow(
+								() ->
+										new CategoryNotFoundException(
+												String.format("Expense Category record with id=%d does not exist.",
+                                                        id)));
 
-    return DataMapper.mapToExpenseCategoryDto(category);
-  }
+		return DataMapper.mapToExpenseCategoryDto(category);
+	}
 
-  public List<ExpenseCategoryResponseDTO> getCategory(Long id, String name) {
-    List<ExpenseCategory> expenseCategory =
-        expenseCategoryRepository.findAll().stream()
-            .filter(category -> category.getId() == null || Objects.equals(category.getId(), id))
-            .filter(category -> category.getName().equals(StringUtil.capitalizeEachWord(name)))
-            .toList();
+	public ExpenseCategoryResponseDTO addCategory(ExpenseCategoryRequestDTO toAddCategory)
+	{
 
-    if (expenseCategory.isEmpty()) {
-      throw new RuntimeException("No Expense Category record found.");
-    }
+		Optional<ExpenseCategory> existingCategory = expenseCategoryRepository.findByName(toAddCategory.getName());
 
-    return expenseCategory.stream().map(DataMapper::mapToExpenseCategoryDto).toList();
-  }
+		if (existingCategory.isPresent())
+		{
+			throw new CategoryNotFoundException(
+					String.format(
+							"Expense Category record with name='%s' already exist: %s.",
+							toAddCategory.getName(), existingCategory.get().getName()));
+		}
 
-  public ExpenseCategoryResponseDTO addCategory(ExpenseCategoryRequestDTO toAddCategory) {
-    String cleanCategory = StringUtil.capitalizeEachWord(toAddCategory.getName());
-    Optional<ExpenseCategory> category = expenseCategoryRepository.findByName(cleanCategory);
+		ExpenseCategory savedCategory =
+				expenseCategoryRepository.save(new ExpenseCategory(null, toAddCategory.getName()));
 
-    if (category.isPresent()) {
-      throw new RuntimeException(
-          String.format(
-              "Expense Category record with name='%s' already exist: %s.",
-              cleanCategory, category));
-    }
+		return DataMapper.mapToExpenseCategoryDto(savedCategory);
+	}
 
-    ExpenseCategory savedCategory =
-        expenseCategoryRepository.save(new ExpenseCategory(null, cleanCategory));
+	public void deleteCategoryById(Long id)
+	{
+		if (id == 1)
+		{
+			throw new RuntimeException("Reserved id. Cannot delete.");
+		}
 
-    return DataMapper.mapToExpenseCategoryDto(savedCategory);
-  }
+		ExpenseCategory categoryToDelete =
+				expenseCategoryRepository
+						.findById(id)
+						.orElseThrow(
+								() ->
+										new RuntimeException(
+												String.format("Expense Category record with id=%d does not exist.",
+                                                        id)));
 
-  public void deleteCategoryById(Long id) {
-    if (id == 1) {
-      throw new RuntimeException("Reserved id. Cannot delete.");
-    }
+		List<Expense> relatedExpenses = expenseRepository.findByCategoryId(id);
 
-    ExpenseCategory categoryToDelete =
-        expenseCategoryRepository
-            .findById(id)
-            .orElseThrow(
-                () ->
-                    new RuntimeException(
-                        String.format("Expense Category record with id=%d does not exist.", id)));
+		ExpenseCategory defaultCategory =
+				expenseCategoryRepository
+						.findById(1L)
+						.orElseThrow(
+								() ->
+										new CategoryNotFoundException(
+												String.format("Expense Category record with id=%d does not exist.",
+                                                        id)));
 
-    List<Expense> relatedExpenses = expenseRepository.findByCategoryId(id);
+		relatedExpenses.forEach(relatedExpense -> relatedExpense.setCategory(defaultCategory));
 
-    ExpenseCategory defaultCategory =
-        expenseCategoryRepository
-            .findById(1L)
-            .orElseThrow(
-                () ->
-                    new CategoryNotFoundException(
-                        String.format("Expense Category record with id=%d does not exist.", id)));
+		expenseRepository.saveAllAndFlush(relatedExpenses);
 
-    relatedExpenses.forEach(relatedExpense -> relatedExpense.setCategory(defaultCategory));
+		expenseCategoryRepository.delete(categoryToDelete);
+	}
 
-    expenseRepository.saveAllAndFlush(relatedExpenses);
+	public ExpenseCategoryResponseDTO updateCategory(
+			Long id, ExpenseCategoryRequestDTO request)
+	{
 
-    expenseCategoryRepository.delete(categoryToDelete);
-  }
+		ExpenseCategory toUpdate =
+				expenseCategoryRepository
+						.findById(id)
+						.orElseThrow(
+								() ->
+										new CategoryNotFoundException(
+												String.format("Expense Category record with id=%d does not exist.",
+                                                        id)));
 
-  public ExpenseCategoryResponseDTO updateCategory(
-      Long id, ExpenseCategoryRequestDTO request) {
+		if (request.getName().equals(toUpdate.getName()))
+		{
+			throw new RuntimeException("No changes detected.");
+		}
+		toUpdate.setName(request.getName());
 
-    ExpenseCategory toUpdate =
-        expenseCategoryRepository
-            .findById(id)
-            .orElseThrow(
-                () ->
-                    new CategoryNotFoundException(
-                        String.format("Expense Category record with id=%d does not exist.", id)));
+		ExpenseCategory updatedCategory = expenseCategoryRepository.save(toUpdate);
 
-    if (request.getName().equals(toUpdate.getName())) {
-      throw new RuntimeException("No changes detected.");
-    }
-    toUpdate.setName(request.getName());
-
-    ExpenseCategory updatedCategory = expenseCategoryRepository.save(toUpdate);
-
-    return DataMapper.mapToExpenseCategoryDto(updatedCategory);
-  }
+		return DataMapper.mapToExpenseCategoryDto(updatedCategory);
+	}
 }
