@@ -1,0 +1,17 @@
+Alternative step if docker is disable in pom
+
+a. Powershell
+    $env:COMPOSE_HTTP_TIMEOUT = 300
+    $env:DOCKER_CLIENT_TIMEOUT = 300
+
+    # confirm
+    echo $env:COMPOSE_HTTP_TIMEOUT
+    echo $env:DOCKER_CLIENT_TIMEOUT
+
+b. manual image pull
+    docker pull postgres:15
+    docker pull docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    docker pull docker.elastic.co/logstash/logstash:8.13.4
+    docker pull docker.elastic.co/kibana/kibana:8.13.4
+
+c. docker-compose --env-file dev.env up --build
