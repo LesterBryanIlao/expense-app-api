@@ -75,7 +75,7 @@ public class ExpenseCategoryService
 	{
 		if (id == 1L)
 		{
-			throw new RuntimeException("Reserved id. Cannot delete.");
+			throw new RuntimeException("Reserved Id. Cannot delete.");
 		}
 
 		ExpenseCategory categoryToDelete =
@@ -106,6 +106,10 @@ public class ExpenseCategoryService
 	public ExpenseCategoryResponseDTO updateCategory(
 			Long id, ExpenseCategoryRequestDTO request)
 	{
+
+		if (id==1L){
+			throw new RuntimeException("Reserved Id. Cannot update.");
+		}
 
 		ExpenseCategory toUpdate =
 				expenseCategoryRepository
