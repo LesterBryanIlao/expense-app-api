@@ -1,0 +1,3 @@
+<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+    <customFields>{"app":"expense-app-api","env":"dev"}</customFields>
+</encoder>

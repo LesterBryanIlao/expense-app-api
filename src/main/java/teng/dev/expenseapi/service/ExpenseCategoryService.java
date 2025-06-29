@@ -1,5 +1,6 @@
 package teng.dev.expenseapi.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import teng.dev.expenseapi.dto.ExpenseCategoryRequestDTO;
 import teng.dev.expenseapi.dto.ExpenseCategoryResponseDTO;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ExpenseCategoryService
 {
 	private final ExpenseCategoryRepository expenseCategoryRepository;
@@ -47,7 +49,7 @@ public class ExpenseCategoryService
 								() ->
 										new CategoryNotFoundException(
 												String.format("Expense Category record with id=%d does not exist.",
-                                                        id)));
+														id)));
 
 		return DataMapper.mapToExpenseCategoryDto(category);
 	}
@@ -68,6 +70,7 @@ public class ExpenseCategoryService
 		ExpenseCategory savedCategory =
 				expenseCategoryRepository.save(new ExpenseCategory(null, toAddCategory.getName()));
 
+		log.info("{} added successfully.", savedCategory);
 		return DataMapper.mapToExpenseCategoryDto(savedCategory);
 	}
 
@@ -85,7 +88,7 @@ public class ExpenseCategoryService
 								() ->
 										new CategoryNotFoundException(
 												String.format("Expense Category record with id=%d does not exist.",
-                                                        id)));
+														id)));
 
 		List<Expense> relatedExpenses = expenseRepository.findByCategoryId(id);
 
@@ -107,7 +110,8 @@ public class ExpenseCategoryService
 			Long id, ExpenseCategoryRequestDTO request)
 	{
 
-		if (id==1L){
+		if (id == 1L)
+		{
 			throw new RuntimeException("Reserved Id. Cannot update.");
 		}
 
@@ -118,7 +122,7 @@ public class ExpenseCategoryService
 								() ->
 										new CategoryNotFoundException(
 												String.format("Expense Category record with id=%d does not exist.",
-                                                        id)));
+														id)));
 
 		if (request.getName().equals(toUpdate.getName()))
 		{
