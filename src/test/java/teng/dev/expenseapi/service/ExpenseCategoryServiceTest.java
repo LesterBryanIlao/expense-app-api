@@ -1,5 +1,6 @@
 package teng.dev.expenseapi.service;
 
+import org.apache.tomcat.util.http.parser.TE;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -138,7 +139,7 @@ class ExpenseCategoryServiceTest
 		RuntimeException exception = assertThrows(RuntimeException.class,
 				() -> expenseCategoryService.deleteCategoryById(DEFAULT_CATEGORY_ID));
 
-		assertEquals("Reserved id. Cannot delete.", exception.getMessage());
+		assertEquals("Reserved Id. Cannot delete.", exception.getMessage());
 	}
 
 	@Test
@@ -172,7 +173,8 @@ class ExpenseCategoryServiceTest
 	}
 
 	@Test
-	void deleteCategoryById_shouldReassignExpensesAndDeleteCategory() {
+	void deleteCategoryById_shouldReassignExpensesAndDeleteCategory()
+	{
 		// Arrange
 		Long idToDelete = 2L;
 
@@ -202,5 +204,60 @@ class ExpenseCategoryServiceTest
 
 		verify(expenseRepository).saveAllAndFlush(relatedExpenses);
 		verify(expenseCategoryRepository).delete(toDelete);
+	}
+
+	@Test
+	void updateCategory_whenUpdatingReservedId_shouldThrowException()
+	{
+
+		Exception exception = assertThrows(RuntimeException.class,
+				() -> expenseCategoryService.updateCategory(DEFAULT_CATEGORY_ID,
+						new ExpenseCategoryRequestDTO()));
+
+		assertEquals("Reserved Id. Cannot update.", exception.getMessage());
+	}
+
+	@Test
+	void updateCategory_whenCategoryDoesNotExist_shouldThrowException()
+	{
+		when(expenseCategoryRepository.findById(TEST_CATEGORY_ID)).thenReturn(Optional.empty());
+
+		CategoryNotFoundException exception = assertThrows(CategoryNotFoundException.class,
+				() -> expenseCategoryService.updateCategory(TEST_CATEGORY_ID, any(ExpenseCategoryRequestDTO.class)));
+
+		assertEquals(
+				String.format("Expense Category record with id=%d does not exist.", TEST_CATEGORY_ID),
+				exception.getMessage());
+	}
+
+	@Test
+	void updateCategory_whenNoChangeInCategoryName_shouldThrowException()
+	{
+		ExpenseCategoryRequestDTO request = new ExpenseCategoryRequestDTO(TEST_CATEGORY_NAME);
+
+		Optional<ExpenseCategory> expenseCategory = Optional.of(new ExpenseCategory(TEST_CATEGORY_ID,
+				TEST_CATEGORY_NAME));
+
+		when(expenseCategoryRepository.findById(TEST_CATEGORY_ID)).thenReturn(expenseCategory);
+
+		Exception exception = assertThrows(RuntimeException.class,
+				() -> expenseCategoryService.updateCategory(TEST_CATEGORY_ID, request));
+
+		assertEquals("No changes detected.", exception.getMessage());
+	}
+
+	@Test
+	void updateCategory_whenCategoryNameIsChanged_shouldReturnChangedDto()
+	{
+		ExpenseCategoryRequestDTO request = new ExpenseCategoryRequestDTO("Updated Category");
+
+		Optional<ExpenseCategory> expenseCategory = Optional.of(new ExpenseCategory(TEST_CATEGORY_ID,
+				TEST_CATEGORY_NAME));
+
+		when(expenseCategoryRepository.findById(TEST_CATEGORY_ID)).thenReturn(expenseCategory);
+
+		expenseCategoryService.updateCategory(TEST_CATEGORY_ID, request);
+
+		verify(expenseCategoryRepository).save(expenseCategory.get());
 	}
 }
