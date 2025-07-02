@@ -51,7 +51,7 @@ public class ExpenseService
 		toSaveExpense.setAmount(BigDecimal.valueOf(request.getAmount()));
 		toSaveExpense.setTransactionDate(request.getTransactionDate());
 
-		var category = expenseCategoryRepository.findById(request.getCategoryId()).orElseThrow(() ->
+		final var category = expenseCategoryRepository.findById(request.getCategoryId()).orElseThrow(() ->
 				new CategoryNotFoundException("Category with id=" + request.getCategoryId() + " not found.")
 		);
 
