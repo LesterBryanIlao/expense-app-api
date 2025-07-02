@@ -111,9 +111,7 @@ class ExpenseCategoryServiceTest
 				() -> expenseCategoryService.addCategory(request));
 
 		assertEquals(
-				String.format(
-						"Expense Category record with name='%s' already exist: %s.",
-						request.getName(), category.getName()),
+				String.format("Expense Category record with name='%s' already exist.", request.getName()),
 				exception.getMessage());
 	}
 
@@ -249,14 +247,15 @@ class ExpenseCategoryServiceTest
 	void updateCategory_whenCategoryNameIsChanged_shouldReturnChangedDto()
 	{
 		ExpenseCategoryRequestDTO request = new ExpenseCategoryRequestDTO("Updated Category");
+		ExpenseCategory existingCategory = new ExpenseCategory(TEST_CATEGORY_ID, TEST_CATEGORY_NAME);
 
-		Optional<ExpenseCategory> expenseCategory = Optional.of(new ExpenseCategory(TEST_CATEGORY_ID,
-				TEST_CATEGORY_NAME));
+		when(expenseCategoryRepository.findById(TEST_CATEGORY_ID)).thenReturn(Optional.of(existingCategory));
+		when(expenseCategoryRepository.save(any()))
+				.thenAnswer(invocation -> invocation.getArgument(0));
 
-		when(expenseCategoryRepository.findById(TEST_CATEGORY_ID)).thenReturn(expenseCategory);
+		ExpenseCategoryResponseDTO response = expenseCategoryService.updateCategory(TEST_CATEGORY_ID, request);
 
-		expenseCategoryService.updateCategory(TEST_CATEGORY_ID, request);
-
-		verify(expenseCategoryRepository).save(expenseCategory.get());
+		assertEquals(TEST_CATEGORY_ID, response.getId());
+		assertEquals("Updated Category", response.getName());
 	}
 }
