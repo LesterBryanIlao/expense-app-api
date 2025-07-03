@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@Component
+//@Component
 @Slf4j
 public class RequestLoggingFilter extends OncePerRequestFilter
 {
@@ -30,6 +30,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter
 		track.put("method", method);
 		track.put("path", path);
 		track.put("status", String.valueOf(response.getStatus()));
+
 		log.info(track.toString());
 	}
 }
