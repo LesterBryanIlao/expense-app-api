@@ -52,7 +52,7 @@ class ExpenseServiceTest
 	@Test
 	void getAllExpenses_whenNoRecord_shouldThrowException()
 	{
-		when(expenseRepository.findAll()).thenReturn(Collections.emptyList());
+		when(expenseRepository.count()).thenReturn(0L);
 
 		final var exception = assertThrows(ExpenseNotFoundException.class, () -> expenseService.getAllExpenses());
 
@@ -62,13 +62,15 @@ class ExpenseServiceTest
 	@Test
 	void getAllExpenses_whenNotEmpty_shouldReturnList()
 	{
-		List<Expense> expenses = new ArrayList<Expense>();
-		Expense expense1 = createExpenseEntity(1L, "Test Expense 1", BigDecimal.valueOf(100));
-		Expense expense2 = createExpenseEntity(2L, "Test Expense 2", BigDecimal.valueOf(200), 2L, "Test Category");
+
+		List<Expense> expenses = new ArrayList<>();
+		Expense expense1 = addExpenseEntity(1L, "Test Expense 1", BigDecimal.valueOf(100));
+		Expense expense2 = addExpenseEntity(2L, "Test Expense 2", BigDecimal.valueOf(200), 2L, "Test Category");
 
 		expenses.add(expense1);
 		expenses.add(expense2);
 
+		when(expenseRepository.count()).thenReturn((long) expenses.size());
 		when(expenseRepository.findAll()).thenReturn(expenses);
 
 		List<ExpenseResponseDTO> result = expenseService.getAllExpenses();
@@ -110,7 +112,7 @@ class ExpenseServiceTest
 	@Test
 	void getExpenseById_whenExpenseRecordExist_shouldReturnRecord()
 	{
-		Expense expense = createExpenseEntity(TEST_ID, "Test Expense", BigDecimal.valueOf(100));
+		Expense expense = addExpenseEntity(TEST_ID, "Test Expense", BigDecimal.valueOf(100));
 
 		when(expenseRepository.findById(TEST_ID)).thenReturn(Optional.of(expense));
 
@@ -127,7 +129,7 @@ class ExpenseServiceTest
 	}
 
 	@Test
-	void createExpense_whenCategoryDoesNotExist_shouldThrowException()
+	void addExpense_whenCategoryDoesNotExist_shouldThrowException()
 	{
 		ExpenseRequestDTO mockRequest = mock(ExpenseRequestDTO.class);
 
@@ -139,14 +141,14 @@ class ExpenseServiceTest
 		when(expenseCategoryRepository.findById(TEST_ID)).thenReturn(Optional.empty());
 
 		Exception exception = assertThrows(CategoryNotFoundException.class,
-				() -> expenseService.createExpense(mockRequest));
+				() -> expenseService.addExpense(mockRequest));
 
 		assertEquals(String.format("Category with id=%s not found.", TEST_ID),
 				exception.getMessage());
 	}
 
 	@Test
-	void createExpense_whenCategoryExist_shouldCreateExpense()
+	void addExpense_whenCategoryExist_shouldAddExpense()
 	{
 		ExpenseRequestDTO request = new ExpenseRequestDTO();
 		request.setDescription("Lunch");
@@ -175,7 +177,7 @@ class ExpenseServiceTest
 		when(expenseCategoryRepository.findById(1L)).thenReturn(Optional.of(category));
 		when(expenseRepository.saveAndFlush(any(Expense.class))).thenReturn(savedExpense);
 
-		ExpenseResponseDTO actualResponse = expenseService.createExpense(request);
+		ExpenseResponseDTO actualResponse = expenseService.addExpense(request);
 
 		assertNotNull(actualResponse);
 		assertEquals(expectedResponse.getId(), actualResponse.getId());
@@ -204,9 +206,9 @@ class ExpenseServiceTest
 		verify(expenseRepository).deleteById(TEST_ID);
 	}
 
-	private Expense createExpenseEntity(Long id, String name, BigDecimal amount)
+	private Expense addExpenseEntity(Long id, String name, BigDecimal amount)
 	{
-		return createExpenseEntity(
+		return addExpenseEntity(
 				id,
 				name,
 				amount,
@@ -215,7 +217,7 @@ class ExpenseServiceTest
 		);
 	}
 
-	private Expense createExpenseEntity(Long id, String name, BigDecimal amount, Long categoryId, String categoryName)
+	private Expense addExpenseEntity(Long id, String name, BigDecimal amount, Long categoryId, String categoryName)
 	{
 		return new Expense(
 				id,

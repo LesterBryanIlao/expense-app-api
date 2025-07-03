@@ -30,43 +30,43 @@ public class ExpenseCategoryService
 
 	public List<ExpenseCategoryResponseDTO> getAllCategories()
 	{
-		log.info("Fetching all expense categories");
+		log.info("Fetching all expense categories.");
 
 		if (expenseCategoryRepository.count() == 0)
 		{
-			log.warn("No Expense Category record found in the database");
-			throw new RuntimeException("No Expense Category record found.");
+			log.warn("No expense category record found in the database.");
+			throw new CategoryNotFoundException("No Expense Category record found.");
 		}
 
-		List<ExpenseCategoryResponseDTO> categories = expenseCategoryRepository.findAll().stream()
+		final var categories = expenseCategoryRepository.findAll().stream()
 				.map(DataMapper::mapToExpenseCategoryDto)
 				.toList();
 
-		log.info("Fetched {} expense categories", categories.size());
+		log.info("Fetched {} expense category records.", categories.size());
 		return categories;
 	}
 
 	public ExpenseCategoryResponseDTO getCategoryById(Long id)
 	{
-		log.info("Fetching expense category with id={}", id);
+		log.info("Fetching expense category record with id={}", id);
 
 		ExpenseCategory category =
 				expenseCategoryRepository
 						.findById(id)
 						.orElseThrow(() ->
 						{
-							log.error("Expense Category with id={} not found", id);
+							log.error("Expense category record with id={} not found", id);
 							return new CategoryNotFoundException(
 									String.format("Expense Category record with id=%d does not exist.", id));
 						});
 
-		log.info("Expense category found: {}", category.getName());
+		log.info("Expense category record found: {}", category);
 		return DataMapper.mapToExpenseCategoryDto(category);
 	}
 
 	public ExpenseCategoryResponseDTO addCategory(ExpenseCategoryRequestDTO toAddCategory)
 	{
-		log.info("Attempting to add new expense category: {}", toAddCategory.getName());
+		log.info("Attempting to add new expense category: {}", toAddCategory);
 
 		Optional<ExpenseCategory> existingCategory = expenseCategoryRepository.findByName(toAddCategory.getName());
 
@@ -80,7 +80,7 @@ public class ExpenseCategoryService
 		ExpenseCategory savedCategory = expenseCategoryRepository.save(new ExpenseCategory(null,
 				toAddCategory.getName()));
 
-		log.info("Expense category '{}' added successfully with ID={}", savedCategory.getName(),
+		log.info("Expense category '{}' added successfully with id={}", savedCategory.getName(),
 				savedCategory.getId());
 
 		return DataMapper.mapToExpenseCategoryDto(savedCategory);
@@ -88,7 +88,7 @@ public class ExpenseCategoryService
 
 	public void deleteCategoryById(Long id)
 	{
-		log.info("Attempting to delete expense category with id={}", id);
+		log.info("Attempting to delete expense category record with id={}", id);
 
 		if (id == 1L)
 		{
@@ -129,7 +129,7 @@ public class ExpenseCategoryService
 
 		if (id == 1L)
 		{
-			log.warn("Attempted to update reserved category ID=1");
+			log.warn("Attempted to update reserved category id=1");
 			throw new RuntimeException("Reserved Id. Cannot update.");
 		}
 
