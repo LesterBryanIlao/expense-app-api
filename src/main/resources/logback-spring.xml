@@ -3,6 +3,16 @@
         <destination>localhost:5000</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{"app":"expense-api", "env":"dev"}</customFields>
+            <pattern>
+                {
+                "level": "%level",
+                "thread": "%thread",
+                "class": "%logger{40}",
+                "method": "%M",
+                "line": "%line",
+                "message": "%msg"
+                }
+            </pattern>
         </encoder>
     </appender>
 
@@ -21,8 +31,8 @@
     </appender>
 
     <root level="DEBUG">
-        <appender-ref ref="LOGSTASH" />
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="LOGSTASH"/>
+        <appender-ref ref="CONSOLE"/>
+        <!--        <appender-ref ref="FILE" />-->
     </root>
 </configuration>
