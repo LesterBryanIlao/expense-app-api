@@ -16,9 +16,8 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRequestDTO
+public class RegisterRequestDTO
 {
-
 	private String firstName;
 
 	private String lastName;
@@ -32,6 +31,5 @@ public class UserRequestDTO
 	@Size(min = 5, message = "Password must be at least 5 characters.")
 	private String password;
 
-	@NotNull
 	private Role role;
 }
