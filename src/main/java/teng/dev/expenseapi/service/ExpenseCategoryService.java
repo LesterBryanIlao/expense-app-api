@@ -1,5 +1,6 @@
 package teng.dev.expenseapi.service;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import teng.dev.expenseapi.dto.ExpenseCategoryRequestDTO;
@@ -64,6 +65,7 @@ public class ExpenseCategoryService
 		return DataMapper.mapToExpenseCategoryDto(category);
 	}
 
+	@Transactional
 	public ExpenseCategoryResponseDTO addCategory(ExpenseCategoryRequestDTO toAddCategory)
 	{
 		log.info("Attempting to add new expense category: {}", toAddCategory);
@@ -86,6 +88,7 @@ public class ExpenseCategoryService
 		return DataMapper.mapToExpenseCategoryDto(savedCategory);
 	}
 
+	@Transactional
 	public void deleteCategoryById(Long id)
 	{
 		log.info("Attempting to delete expense category record with id={}", id);
@@ -123,6 +126,7 @@ public class ExpenseCategoryService
 		log.info("Deleted expense category with id={}", id);
 	}
 
+	@Transactional
 	public ExpenseCategoryResponseDTO updateCategory(Long id, ExpenseCategoryRequestDTO request)
 	{
 		log.info("Updating category with id={}", id);

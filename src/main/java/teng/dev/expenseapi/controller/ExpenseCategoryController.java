@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,13 +38,14 @@ public class ExpenseCategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<ExpenseCategoryResponseDTO> addCategory(
+     public ResponseEntity<ExpenseCategoryResponseDTO> addCategory(
             @RequestBody @Valid ExpenseCategoryRequestDTO request) {
         ExpenseCategoryResponseDTO response = expenseCategoryService.addCategory(request);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ExpenseCategoryResponseDTO> updateCategory(
             @PathVariable Long id, @RequestBody @Valid ExpenseCategoryRequestDTO request) {
       ExpenseCategoryResponseDTO response = expenseCategoryService.updateCategory(id, request);
@@ -51,6 +53,7 @@ public class ExpenseCategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable Long id) {
         expenseCategoryService.deleteCategoryById(id);
