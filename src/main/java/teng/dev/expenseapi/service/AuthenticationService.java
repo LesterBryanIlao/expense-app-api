@@ -2,29 +2,39 @@ package teng.dev.expenseapi.service;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import teng.dev.expenseapi.dto.UserRequestDTO;
+import teng.dev.expenseapi.dto.LoginRequestDto;
+import teng.dev.expenseapi.dto.TokenPair;
+import teng.dev.expenseapi.dto.RegisterRequestDTO;
 import teng.dev.expenseapi.entity.User;
 import teng.dev.expenseapi.repository.UserRepository;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AuthenticationService
 {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final AuthenticationManager authenticationManager;
+	private final JwtService jwtService;
 
 	@Transactional
-	public void registerUser(@Valid UserRequestDTO request)
+	public void registerUser(@Valid RegisterRequestDTO request)
 	{
 		if (userRepository.findByUsername(request.getUsername()).isPresent())
 		{
-			throw new RuntimeException("Username already exists");
+			throw new IllegalArgumentException("Username is already in use");
 		}
 
-		User user = User.builder()
+		User user = User
+				.builder()
 				.firstName(request.getFirstName())
 				.lastName(request.getLastName())
 				.dateOfBirth(request.getDateOfBirth())
@@ -34,5 +44,19 @@ public class AuthenticationService
 				.build();
 
 		userRepository.save(user);
+	}
+
+	public TokenPair loginUser(@Valid LoginRequestDto request)
+	{
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(
+						request.getUsername(),
+						request.getPassword()
+				)
+		);
+
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+		return jwtService.generateTokenPair(authentication);
 	}
 }
