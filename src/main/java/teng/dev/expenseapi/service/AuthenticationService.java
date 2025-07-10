@@ -3,16 +3,19 @@ package teng.dev.expenseapi.service;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import teng.dev.expenseapi.dto.LoginRequestDto;
+import teng.dev.expenseapi.dto.LoginRequest;
+import teng.dev.expenseapi.dto.RefreshTokenRequest;
 import teng.dev.expenseapi.dto.TokenPair;
-import teng.dev.expenseapi.dto.RegisterRequestDTO;
+import teng.dev.expenseapi.dto.RegisterRequest;
 import teng.dev.expenseapi.entity.User;
 import teng.dev.expenseapi.repository.UserRepository;
 
@@ -24,9 +27,10 @@ public class AuthenticationService
 	private final PasswordEncoder passwordEncoder;
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
+	private final UserDetailsService userDetailsService;
 
 	@Transactional
-	public void registerUser(@Valid RegisterRequestDTO request)
+	public void register(@Valid RegisterRequest request)
 	{
 		if (userRepository.findByUsername(request.getUsername()).isPresent())
 		{
@@ -46,7 +50,7 @@ public class AuthenticationService
 		userRepository.save(user);
 	}
 
-	public TokenPair loginUser(@Valid LoginRequestDto request)
+	public TokenPair login(@Valid LoginRequest request)
 	{
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
@@ -58,5 +62,32 @@ public class AuthenticationService
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		return jwtService.generateTokenPair(authentication);
+	}
+
+	public TokenPair refresh(@Valid RefreshTokenRequest request)
+	{
+		val refreshToken = request.getRefreshToken();
+
+		if(!jwtService.isValidToken(refreshToken)){
+			throw new IllegalArgumentException("Invalid refresh token.");
+		}
+
+		String user = jwtService.extractUsernameFromToken(refreshToken);
+
+		UserDetails userDetails = userDetailsService.loadUserByUsername(user);
+
+		if (userDetails == null) {
+			throw new IllegalArgumentException("User not found.");
+		}
+
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+				userDetails,
+				null,
+				userDetails.getAuthorities()
+		);
+
+		val accessToken = jwtService.generateAccessToken(authentication);
+
+		return new TokenPair(accessToken, refreshToken);
 	}
 }

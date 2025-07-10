@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import teng.dev.expenseapi.dto.LoginRequestDto;
-import teng.dev.expenseapi.dto.RegisterRequestDTO;
+import teng.dev.expenseapi.dto.LoginRequest;
+import teng.dev.expenseapi.dto.RefreshTokenRequest;
+import teng.dev.expenseapi.dto.RegisterRequest;
 import teng.dev.expenseapi.dto.TokenPair;
 import teng.dev.expenseapi.service.AuthenticationService;
 
@@ -20,17 +21,26 @@ public class AuthenticationController
 	private final AuthenticationService authenticationService;
 
 	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDTO request)
+	public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request)
 	{
-		authenticationService.registerUser(request);
+		authenticationService.register(request);
 		return ResponseEntity.ok("User created successfully.");
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequestDto request)
+	public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request)
 	{
-		TokenPair tokenPair = authenticationService.loginUser(request);
+		TokenPair tokenPair = authenticationService.login(request);
 		return ResponseEntity.ok(tokenPair);
 	}
+
+	@PostMapping("/refresh-token")
+	public ResponseEntity<?> refresh(@Valid @RequestBody RefreshTokenRequest request)
+	{
+		TokenPair tokenPair = authenticationService.refresh(request);
+		return ResponseEntity.ok(tokenPair);
+
+	}
+
 }
 
