@@ -53,18 +53,17 @@ public class SecurityConfig
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
 	{
 
-		http
-				.csrf(AbstractHttpConfigurer::disable) // or .csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(
-						request -> request
-						.requestMatchers("/api/auth/**")
-						.permitAll()
-						.anyRequest()
-						.authenticated())
-				.sessionManagement(session ->
-						session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-				.authenticationProvider(authenticationProvider());
+		http.csrf(AbstractHttpConfigurer::disable) // or .csrf(csrf -> csrf.disable())
+			.authorizeHttpRequests(
+					request -> request
+					.requestMatchers("/api/auth/**")
+					.permitAll()
+					.anyRequest()
+					.authenticated())
+			.sessionManagement(session ->
+					session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+			.authenticationProvider(authenticationProvider());
 
 		return http.build();
 	}

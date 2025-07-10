@@ -19,7 +19,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/expenses")
+@RequestMapping("v1/api/expenses")
 public class ExpenseController
 {
 	private final ExpenseService expenseService;
