@@ -21,7 +21,7 @@ import teng.dev.expenseapi.service.ExpenseCategoryService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/categories")
+@RequestMapping("v1/api/categories")
 public class ExpenseCategoryController {
     private final ExpenseCategoryService expenseCategoryService;
 
