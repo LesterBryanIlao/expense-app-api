@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import teng.dev.expenseapi.entity.ExpenseCategory;
 import teng.dev.expenseapi.repository.ExpenseCategoryRepository;
+import teng.dev.expenseapi.util.StringConstants;
 
 @SpringBootApplication
 public class ExpenseapiApplication
@@ -19,9 +20,9 @@ public class ExpenseapiApplication
 	@Bean
 	CommandLineRunner initDatabase(ExpenseCategoryRepository expenseCategoryRepository) {
 		return args -> {
-			expenseCategoryRepository.findByName("Uncategorized")
+			expenseCategoryRepository.findByName(StringConstants.UNCATEGORIZED)
 					.orElseGet(() -> expenseCategoryRepository.saveAndFlush(
-							new ExpenseCategory(null, "Uncategorized")
+							new ExpenseCategory(null, StringConstants.UNCATEGORIZED)
 					));
 		};
 	}

@@ -27,20 +27,26 @@ public class ExpenseCategoryController {
 
     @GetMapping
     public ResponseEntity<List<ExpenseCategoryResponseDTO>> getAllCategories() {
+
         List<ExpenseCategoryResponseDTO> response = expenseCategoryService.getAllCategories();
+
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ExpenseCategoryResponseDTO> getCategoryById(@PathVariable Long id) {
+
         ExpenseCategoryResponseDTO response = expenseCategoryService.getCategoryById(id);
+
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
      public ResponseEntity<ExpenseCategoryResponseDTO> addCategory(
             @RequestBody @Valid ExpenseCategoryRequestDTO request) {
+
         ExpenseCategoryResponseDTO response = expenseCategoryService.addCategory(request);
+
         return ResponseEntity.ok(response);
     }
 
@@ -48,7 +54,9 @@ public class ExpenseCategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ExpenseCategoryResponseDTO> updateCategory(
             @PathVariable Long id, @RequestBody @Valid ExpenseCategoryRequestDTO request) {
+
       ExpenseCategoryResponseDTO response = expenseCategoryService.updateCategory(id, request);
+
       return ResponseEntity.ok(response);
     }
 
@@ -56,6 +64,8 @@ public class ExpenseCategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable Long id) {
+
         expenseCategoryService.deleteCategoryById(id);
+
     }
 }

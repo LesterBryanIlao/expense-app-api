@@ -12,7 +12,9 @@ import teng.dev.expenseapi.entity.ExpenseCategory;
 import teng.dev.expenseapi.exception.CategoryNotFoundException;
 import teng.dev.expenseapi.repository.ExpenseCategoryRepository;
 import teng.dev.expenseapi.repository.ExpenseRepository;
+import teng.dev.expenseapi.util.StringConstants;
 
+import javax.print.DocFlavor;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +34,6 @@ class ExpenseCategoryServiceTest
 	private final Long DEFAULT_CATEGORY_ID = 1L;
 
 	private final String TEST_CATEGORY_NAME = "Test Category";
-
-	private final String DEFAULT_CATEGORY_NAME = "Uncategorized";
 
 	@Mock
 	private ExpenseCategoryRepository expenseCategoryRepository;
@@ -57,7 +57,7 @@ class ExpenseCategoryServiceTest
 	void getAllCategories_shouldReturnRecords()
 	{
 		List<ExpenseCategory> expenseCategories =
-				List.of(new ExpenseCategory(1L, "Uncategorized"), new ExpenseCategory(2L, "Food"));
+				List.of(new ExpenseCategory(1L, StringConstants.UNCATEGORIZED), new ExpenseCategory(2L, "Food"));
 
 		when(expenseCategoryRepository.count()).thenReturn((long) expenseCategories.size());
 		when(expenseCategoryRepository.findAll()).thenReturn(expenseCategories);
@@ -65,7 +65,7 @@ class ExpenseCategoryServiceTest
 		List<ExpenseCategoryResponseDTO> result = expenseCategoryService.getAllCategories();
 
 		assertEquals(2, result.size());
-		assertEquals("Uncategorized", result.get(0).getName());
+		assertEquals(StringConstants.UNCATEGORIZED, result.get(0).getName());
 		assertEquals("Food", result.get(1).getName());
 	}
 
@@ -88,7 +88,7 @@ class ExpenseCategoryServiceTest
 	@Test
 	void getCategoryById_shouldReturnCategory()
 	{
-		ExpenseCategory category = new ExpenseCategory(TEST_CATEGORY_ID, "Uncategorized");
+		ExpenseCategory category = new ExpenseCategory(TEST_CATEGORY_ID, StringConstants.UNCATEGORIZED);
 
 		when(expenseCategoryRepository.findById(TEST_CATEGORY_ID)).thenReturn(Optional.of(category));
 
@@ -176,7 +176,7 @@ class ExpenseCategoryServiceTest
 		Long idToDelete = 2L;
 
 		ExpenseCategory toDelete = new ExpenseCategory(idToDelete, "Travel");
-		ExpenseCategory defaultCategory = new ExpenseCategory(1L, "Uncategorized");
+		ExpenseCategory defaultCategory = new ExpenseCategory(1L, StringConstants.UNCATEGORIZED);
 
 		Expense expense1 = new Expense();
 		expense1.setId(1L);

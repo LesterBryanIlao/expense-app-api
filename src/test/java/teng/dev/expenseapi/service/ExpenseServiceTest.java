@@ -14,6 +14,7 @@ import teng.dev.expenseapi.exception.ExpenseNotFoundException;
 import teng.dev.expenseapi.repository.ExpenseCategoryRepository;
 import teng.dev.expenseapi.repository.ExpenseRepository;
 import teng.dev.expenseapi.util.DataMapper;
+import teng.dev.expenseapi.util.StringConstants;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -35,8 +36,6 @@ import static org.mockito.Mockito.when;
 class ExpenseServiceTest
 {
 	private final Long DEFAULT_CATEGORY_ID = 1L;
-
-	private final String DEFAULT_CATEGORY_NAME = "Uncategorized";
 
 	private final Long TEST_ID = 99L;
 
@@ -213,7 +212,7 @@ class ExpenseServiceTest
 				name,
 				amount,
 				DEFAULT_CATEGORY_ID,
-				DEFAULT_CATEGORY_NAME
+				StringConstants.UNCATEGORIZED
 		);
 	}
 

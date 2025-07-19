@@ -30,6 +30,7 @@ public class ExpenseService
 		if (expenseRepository.count() == 0)
 		{
 			log.warn("No expense record found in the database");
+
 			throw new ExpenseNotFoundException("No expense record found.");
 		}
 
@@ -49,6 +50,7 @@ public class ExpenseService
 				.orElseThrow(() ->
 						{
 							log.error("Expense record with id={} not found", id);
+
 							return new ExpenseNotFoundException(
 									String.format("Expense record with id=%s does not exist.", id)
 							);
@@ -73,6 +75,7 @@ public class ExpenseService
 				.orElseThrow(() ->
 						{
 							log.error("Expense category record with id={} not found", request.getCategoryId());
+
 							return new CategoryNotFoundException(String.format("Category with id=%s not found.",
 									request.getCategoryId()));
 						}
@@ -83,6 +86,7 @@ public class ExpenseService
 		Expense savedExpense = expenseRepository.saveAndFlush(toSaveExpense);
 
 		log.info("Added expense record {}", savedExpense);
+
 		return DataMapper.mapToExpenseResponseDto(savedExpense);
 	}
 
@@ -94,12 +98,14 @@ public class ExpenseService
 				.orElseThrow(() ->
 						{
 							log.error("Expense with id={} not found for deletion", id);
+
 							return new ExpenseNotFoundException(
 									String.format("Expense record with id=%s does not exist.", id));
 						}
 				);
 
 		expenseRepository.deleteById(id);
+
 		log.info("Deleted expense with id={}", id);
 	}
 }
