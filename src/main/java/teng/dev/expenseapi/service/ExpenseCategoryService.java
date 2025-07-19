@@ -36,6 +36,7 @@ public class ExpenseCategoryService
 		if (expenseCategoryRepository.count() == 0)
 		{
 			log.warn("No expense category record found in the database.");
+
 			throw new CategoryNotFoundException("No Expense Category record found.");
 		}
 
@@ -57,6 +58,7 @@ public class ExpenseCategoryService
 						.orElseThrow(() ->
 						{
 							log.error("Expense category record with id={} not found", id);
+
 							return new CategoryNotFoundException(
 									String.format("Expense Category record with id=%d does not exist.", id));
 						});
@@ -75,6 +77,7 @@ public class ExpenseCategoryService
 		if (existingCategory.isPresent())
 		{
 			log.warn("Expense category '{}' already exists", toAddCategory.getName());
+
 			throw new CategoryNotFoundException(
 					String.format("Expense Category record with name='%s' already exist.", toAddCategory.getName()));
 		}
@@ -96,6 +99,7 @@ public class ExpenseCategoryService
 		if (id == 1L)
 		{
 			log.warn("Attempted to delete reserved category id=1");
+
 			throw new RuntimeException("Reserved Id. Cannot delete.");
 		}
 
@@ -104,6 +108,7 @@ public class ExpenseCategoryService
 				.orElseThrow(() ->
 				{
 					log.error("Expense Category with id={} not found for deletion", id);
+
 					return new CategoryNotFoundException(
 							String.format("Expense Category record with id=%d does not exist.", id));
 				});
@@ -115,6 +120,7 @@ public class ExpenseCategoryService
 				.orElseThrow(() ->
 				{
 					log.error("Default expense category with id=1 not found");
+
 					return new CategoryNotFoundException("Default category does not exist.");
 				});
 
@@ -123,6 +129,7 @@ public class ExpenseCategoryService
 		log.info("Reassigned all related expenses to default category");
 
 		expenseCategoryRepository.delete(categoryToDelete);
+
 		log.info("Deleted expense category with id={}", id);
 	}
 
@@ -134,6 +141,7 @@ public class ExpenseCategoryService
 		if (id == 1L)
 		{
 			log.warn("Attempted to update reserved category id=1");
+
 			throw new RuntimeException("Reserved Id. Cannot update.");
 		}
 
@@ -141,6 +149,7 @@ public class ExpenseCategoryService
 				.orElseThrow(() ->
 				{
 					log.error("Expense Category with id={} not found for update", id);
+
 					return new CategoryNotFoundException(
 							String.format("Expense Category record with id=%d does not exist.", id));
 				});
@@ -148,6 +157,7 @@ public class ExpenseCategoryService
 		if (request.getName().equals(toUpdate.getName()))
 		{
 			log.warn("No changes detected when updating category id={}", id);
+
 			throw new RuntimeException("No changes detected.");
 		}
 
@@ -155,6 +165,7 @@ public class ExpenseCategoryService
 		ExpenseCategory updatedCategory = expenseCategoryRepository.save(toUpdate);
 
 		log.info("Updated category id={} with new name='{}'", updatedCategory.getId(), updatedCategory.getName());
+
 		return DataMapper.mapToExpenseCategoryDto(updatedCategory);
 	}
 }

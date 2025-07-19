@@ -24,6 +24,7 @@ public class AuthenticationController
 	public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request)
 	{
 		authenticationService.register(request);
+
 		return ResponseEntity.ok("User created successfully.");
 	}
 
@@ -31,6 +32,7 @@ public class AuthenticationController
 	public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request)
 	{
 		TokenPair tokenPair = authenticationService.login(request);
+
 		return ResponseEntity.ok(tokenPair);
 	}
 
@@ -38,8 +40,8 @@ public class AuthenticationController
 	public ResponseEntity<?> refresh(@Valid @RequestBody RefreshTokenRequest request)
 	{
 		TokenPair tokenPair = authenticationService.refresh(request);
-		return ResponseEntity.ok(tokenPair);
 
+		return ResponseEntity.ok(tokenPair);
 	}
 
 }

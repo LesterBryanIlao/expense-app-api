@@ -11,13 +11,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "expense") // Explicitly defining table name
+@Table(name = "expense")
 public class Expense {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false) // Ensuring it's required
+	@Column(nullable = false)
 	private String description;
 
 	@DecimalMin(value = "0.0", inclusive = false, message = "Amount must be greater than 0")
@@ -26,7 +26,7 @@ public class Expense {
 	private BigDecimal amount;
 
 	@ManyToOne
-	@JoinColumn(name = "category_id", nullable = false) // Can be null
+	@JoinColumn(name = "category_id", nullable = false)
 	private ExpenseCategory category;
 
 	@Column(nullable = false)
